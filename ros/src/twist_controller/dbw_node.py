@@ -5,7 +5,6 @@ from std_msgs.msg import Bool
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd, SteeringReport
 from geometry_msgs.msg import TwistStamped
 import math
-
 from twist_controller import Controller
 
 '''
@@ -52,9 +51,19 @@ class DBWNode(object):
                                             ThrottleCmd, queue_size=1)
         self.brake_pub = rospy.Publisher('/vehicle/brake_cmd',
                                          BrakeCmd, queue_size=1)
+        # Loop Rate
+        self.loop_frequency = 50  # Hz
 
         # TODO: Create `Controller` object
-        # self.controller = Controller(<Arguments you wish to provide>)
+        self.controller = Controller(wheel_base,
+                                     steer_ratio,
+                                     max_lat_accel,
+                                     max_steer_angle,
+                                     accel_limit,
+                                     decel_limit,
+                                     self.loop_frequency,
+                                     vehicle_mass,
+                                     wheel_radius)
 
         # TODO: Subscribe to all the topics you need to
 
