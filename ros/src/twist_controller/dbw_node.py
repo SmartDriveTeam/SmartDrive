@@ -30,6 +30,7 @@ that we have created in the `__init__` function.
 
 '''
 
+
 class DBWNode(object):
     def __init__(self):
         rospy.init_node('dbw_node')
@@ -97,11 +98,12 @@ class DBWNode(object):
             rate.sleep()
 
     def publish(self, throttle, brake, steer):
-        tcmd = ThrottleCmd()
-        tcmd.enable = True
-        tcmd.pedal_cmd_type = ThrottleCmd.CMD_PERCENT
-        tcmd.pedal_cmd = throttle
-        self.throttle_pub.publish(tcmd)
+        if brake == 0 and throttle >= 0.:
+           tcmd = ThrottleCmd()
+           tcmd.enable = True
+           tcmd.pedal_cmd_type = ThrottleCmd.CMD_PERCENT
+           tcmd.pedal_cmd = throttle
+           self.throttle_pub.publish(tcmd)
 
         scmd = SteeringCmd()
         scmd.enable = True
@@ -128,6 +130,7 @@ class DBWNode(object):
 
         rospy.loginfo('DBW_ENABLED : {}'.format(msg.data))
         self.dbw_enabled = msg.data
+
 
 if __name__ == '__main__':
     DBWNode()
