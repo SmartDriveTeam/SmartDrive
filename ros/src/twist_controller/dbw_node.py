@@ -55,7 +55,10 @@ class DBWNode(object):
                                          BrakeCmd, queue_size=1)
         # Loop Rate
         self.loop_frequency = 50  # Hz
-
+        
+        # Status
+        self.dbw_enabled = False
+        
         # TODO: Create `Controller` object
         self.controller = Controller(wheel_base,
                                      steer_ratio,
@@ -79,7 +82,10 @@ class DBWNode(object):
         self.dbw_enable = None
         self.linear_vel = None
         self.angular_vel = None
-        self.throttle = self.steering = self.brake = 0
+        
+        # Test Car moving forward
+        self.throttle = 1
+        self.steering = self.brake = 0
 
         self.loop()
 
