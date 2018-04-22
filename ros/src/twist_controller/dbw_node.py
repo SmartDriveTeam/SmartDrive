@@ -72,7 +72,7 @@ class DBWNode(object):
                                      wheel_radius)
 
         # TODO: Subscribe to all the topics you need to
-        rospy.Subscribe('/vehicle/dbw_enable', Bool, self.dbw_enabled_callback)
+        rospy.Subscriber('/vehicle/dbw_enabled', Bool, self.dbw_enabled_callback)
         rospy.Subscriber('/current_velocity', TwistStamped,
                          self.velocity_callback)
         rospy.Subscriber('/twist_cmd', TwistStamped, self.twist_callback)
