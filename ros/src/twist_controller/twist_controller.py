@@ -40,3 +40,33 @@ class Controller(object):
             return 0., 0., 0.
 
         return 1., 0., 0.
+########### Thought ##########
+#       # To set up a lower limit
+#        if math.fabs(linear_vel) < 0.1:
+#            linear_vel.x = 0.
+#        if math.fabs(angular_vel) < 0.001:
+#            angular_vel.z = 0.
+#        # To calculate the residual error for PID class
+#        vel_err = (linear_vel - current_vel)/50.0
+
+#        # Iteration for PID loop
+#        if self.last_timestamp is not None:
+#            # To get current time
+#            time = rospy.get_time()      
+#            # To compute time interval
+#            dt = time - self.last_timestamp
+#            self.last_timestamp = time
+            
+#            # PID class: it returns output for throttle & brake axes as a joint forward_backward axis
+#            self.pid_class = PID(11.2, 0.05, 0.3, -accel_limit, accel_limit)    
+#            forward_axis = self.pid_class.step(vel_err, dt)
+
+#            # To obtain the steering value from YawController
+#            steering = self.steering_controller.get_steering(linear_vel, angular_vel, current_vel)
+#            # To update the steering by using steering pid loop  
+            
+#           return throttle, brake, steer
+#        else:
+#            # To update the last time stamp and return zeroes tuple
+#            self.last_timestamp = rospy.get_time()
+#            return 0., 0., 0.    
