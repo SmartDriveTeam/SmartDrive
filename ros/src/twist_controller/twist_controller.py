@@ -31,12 +31,15 @@ class Controller(object):
             0.3, 0.1, 0.09, mn=decel_limit, mx=accel_limit)
         self.low_pass_filter = LowPassFilter(0.5, 0.02)
         self.last_timestamp = rospy.get_time()
+        
         # For iterative loop over time step, reset last update time
         self.last_timestamp = None
         
-        # To set up parameters for PID class
-        self.pid_class = PID(11.2, 0.05, 0.3, -accel_limit, accel_limit)
-        
+        # To set up parameters for PID controller 
+        self.pid_controller = PID(11.2, 0.05, 0.3, -accel_limit, accel_limit)
+        self.steering_pid = PID(0.8, 0.05, 0.2, -max_steer_angle/2., max_steer_angle/.)
+        #self.feddback = steering_feedback
+                    
     def control(self, current_vel, dbw_enabled, linear_vel, angular_vel):
 
         # TODO: Change the arg, kwarg list to suit your needs
@@ -55,7 +58,7 @@ class Controller(object):
         # To calculate the residual error for PID class
         vel_err = (linear_vel - current_vel)/50.0
 
-        # Iteration for PID loop
+        # Iteration for throttle, brake & steer
         if self.last_timestamp is not None:
             # To get current time
             time = rospy.get_time()      
@@ -63,13 +66,21 @@ class Controller(object):
             dt = time - self.last_timestamp
             self.last_timestamp = time
             
-            # PID class: it returns output for throttle & set up axes as a joint forward_backward axis
-            forward_axis = self.pid_class.step(vel_err, dt)
+            ## Throttle: it returns output for throttle & set up axes as a joint forward_backward axis
+            forward_axis = self.pid_controller.step(vel_err, dt)
             reverse_axis = -forward_axis*(self.decel_limit/(-self.accel_limit))
             
-            # To obtain the steering value from YawController
+            # if the forward axis is positive, it can be used for throttle
+            throttle = min(max(0.0, forward_axis), 0.33)
+
+            ## Brake: Rescale to convert brake in units of torque which is what publisher and throttle command expects. 
+            # Rescale :vehicle mass * wheel radius * desired accleration
+            brake = max(0.0, reverse_axis - self.brake_deadband) * 100.
+            
+            ## Steer: to obtain the steering value from YawController
             steering = self.steering_controller.get_steering(linear_vel, angular_vel, current_vel)
             # To update the steering by using steering pid loop  
+            # steering = self.steering_pid.step(steering - steer_feedback, dt)
             
            return throttle, brake, steer
         else:
