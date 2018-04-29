@@ -7,6 +7,8 @@ from scipy.spatial import KDTree
 from dbw_mkz_msgs.msg import ThrottleCmd, SteeringCmd, BrakeCmd
 from std_msgs.msg import Bool
 
+from std_msgs.msg import Int32
+
 import math
 
 '''
@@ -25,7 +27,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
-LOGWARN_MODE = True ## Show logwarn if True is set
+LOGWARN_MODE = False #True ## Show logwarn if True is set
 TO_METER_PER_SEC = 0.44704 # 1 mile/hour = 0.44704 meter/sec
 TARGET_SPEED_MPH = 10
 
@@ -36,12 +38,13 @@ class WaypointUpdater(object):
         rospy.Subscriber('/current_pose', PoseStamped, self.pose_cb)
         rospy.Subscriber('/base_waypoints', Lane, self.waypoints_cb)
 
+        sub3 = rospy.Subscriber('/traffic_waypoint', Int32, self.traffic_cb)
+        #self.upcoming_red_light_pub = rospy.Publisher('/traffic_waypoint', Int32, queue_size=1)
 
         rospy.Subscriber('/vehicle/throttle_cmd', ThrottleCmd, self.throttle_cmd_cb)
         rospy.Subscriber('/vehicle/steering_cmd', SteeringCmd, self.steering_cmd_cb)
         rospy.Subscriber('/vehicle/brake_cmd', BrakeCmd, self.brake_cmd_cb)
         
-
         # TODO: Add a subscriber for /traffic_waypoint and /obstacle_waypoint below
 
         self.final_waypoints_pub = rospy.Publisher('final_waypoints', Lane, queue_size=1)
@@ -51,6 +54,9 @@ class WaypointUpdater(object):
         self.base_waypoints = None
         self.waypoints_2d = None
         self.waypoint_tree = None
+
+        self.closest_waypoint_idx = None
+        self.red_light_waypoint_idx = None
 
         self.throttle_cmd = None
         self.steering_cmd = None
@@ -62,13 +68,18 @@ class WaypointUpdater(object):
         rate = rospy.Rate(10)	# decrease Rate() from 50 to 10 Hz for slow VM & Host interaction
         while not rospy.is_shutdown():
             if self.pose and self.base_waypoints:
-                # 1. Normal Case
-                closest_waypoint_idx = self.get_closest_waypoint_idx()
-                self.publish_waypoints(closest_waypoint_idx)
-                # 2. Traffic Light Case
-                # ...
+                self.closest_waypoint_idx = self.get_closest_waypoint_idx()
+                if self.red_light_waypoint_idx == -1:
+                    # 1. Normal Case
+                    self.publish_waypoints(self.closest_waypoint_idx)
+                else:  
+                    # 2. Traffic Light Case
+                    self.publish_red_light_waypoints(self.closest_waypoint_idx, self.red_light_waypoint_idx)
+                    
+                rospy.logwarn("next_idx, red_idx = %s, %s", self.closest_waypoint_idx, self.red_light_waypoint_idx)
+                # red_idx -1 : Y,G    not -1 : red light waypoint index
                 
-                # Status 
+                # Status              
                 if LOGWARN_MODE:
                     rospy.logwarn("x, y, next_idx = %s, %s, %s",self.pose.pose.position.x, self.pose.pose.position.y, closest_waypoint_idx)
                     rospy.logwarn("throttle, sttering, brake = %s, %s, %s",self.throttle_cmd, self.steering_cmd, self.brake_cmd)
@@ -100,6 +111,14 @@ class WaypointUpdater(object):
 	    self.set_waypoint_velocity(lane.waypoints, i, TARGET_SPEED_MPH * TO_METER_PER_SEC)
         self.final_waypoints_pub.publish(lane)
 
+    def publish_red_light_waypoints(self, closest_idx, red_light_waypoint_idx): ##
+        lane = Lane()
+        lane.header = self.base_waypoints.header
+        lane.waypoints = self.base_waypoints.waypoints[closest_idx:red_light_waypoint_idx]
+        for i in range(len(lane.waypoints)-1):
+	    self.set_waypoint_velocity(lane.waypoints, i, 0)  # To be modified ...
+        self.final_waypoints_pub.publish(lane)
+
     def pose_cb(self, msg): #
         self.pose = msg
 
@@ -113,7 +132,7 @@ class WaypointUpdater(object):
 
     def traffic_cb(self, msg): 
         # TODO: Callback for /traffic_waypoint message. Implement
-        pass
+        self.red_light_waypoint_idx = msg.data
 
     def obstacle_cb(self, msg):
         # TODO: Callback for /obstacle_waypoint message. We will implement it later
