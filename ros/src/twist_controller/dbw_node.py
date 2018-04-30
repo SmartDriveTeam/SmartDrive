@@ -55,10 +55,7 @@ class DBWNode(object):
                                          BrakeCmd, queue_size=1)
         # Loop Rate
         self.loop_frequency = 50  # Hz
-        
-        # Status
-        self.dbw_enabled = False
-        
+         
         # TODO: Create `Controller` object
         self.controller = Controller(wheel_base,
                                      steer_ratio,
