@@ -67,17 +67,21 @@ class Controller(object):
         # 2. Throttle Control
         throttle = self.throttle_controller.step(vel_error, sample_time)
         brake = 0
+        
+        accel = max(min(vel_error, self.accel_limit), self.decel_limit)        
 
-        # 3. Brake Control
         if linear_vel == 0. and current_vel < 0.1:
             throttle = 0
             brake = 400 # N*m - to hold the car in place if we are stopped at a light. Acceleration ~ 1m/s^2
 
-        elif throttle < .1 and vel_error < 0:
+#        elif throttle < .1 and vel_error < 0:
+        elif throttle < .1 and accel < 0:            
             throttle = 0
             decel = max(vel_error, self.decel_limit)
-            brake = abs(decel)*self.vehicle_mass*self.wheel_radius #Torque N*m
+#            brake = abs(decel)*self.vehicle_mass*self.wheel_radius #Torque N*m
+            brake = -max(accel + self.brake_deadband, self.decel_limit)*self.vehicle_mass*self.wheel_radius
 
+            
         return throttle, brake, steering 
 
 
