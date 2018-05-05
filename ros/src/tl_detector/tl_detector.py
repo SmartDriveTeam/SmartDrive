@@ -145,7 +145,7 @@ class TLDetector(object):
             return -1
 
         #Find nearest
-	max_range = 275
+        max_range = 275
         min_dist = float("inf")
         min_idx = None
 
@@ -181,14 +181,8 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        if(not self.has_image):
-            self.prev_light_loc = None
-            return False
-
-        cv_image = self.bridge.imgmsg_to_cv2(self.camera_image, "bgr8")
-
-        #Get classification
-        return self.light_classifier.get_classification(cv_image)
+        
+        return light.state
 
     def process_traffic_lights(self):
         """Finds closest visible traffic light, if one exists, and determines its
@@ -199,16 +193,15 @@ class TLDetector(object):
             int: ID of traffic light color (specified in styx_msgs/TrafficLight)
 
         """
-        light = None
 
-	# If any of these conditions are found, return none
+    	# If any of these conditions are found, return none
         if self.pose is None:
             return -1, TrafficLight.UNKNOWN
 
-	if self.waypoints is None:
+        if self.waypoints is None:
             return -1, TrafficLight.UNKNOWN
 
-	if self.light_classifier is None:
+        if self.light_classifier is None:
             return -1, TrafficLight.UNKNOWN
 
         #TODO find the closest visible traffic light (if one exists)
@@ -219,9 +212,9 @@ class TLDetector(object):
 
         # Find closest stop line waypoint index
         stop_line_idx    = self.get_closest_waypoint( self.lights[light_idx].pose.pose, self.stop_line_positions_poses ) # closest look
-	# Check stop line in front of vehicle
+        # Check stop line in front of vehicle
         infront_idx = self.get_closest_waypoint( self.pose.pose, self.stop_line_positions_poses, "forward" )  # foward look
-	# Make sure that they agree; if not return UNKNOWN
+        # Make sure that they agree; if not return UNKNOWN
         if(stop_line_idx != infront_idx):
             return -1, TrafficLight.UNKNOWN
 
