@@ -51,7 +51,7 @@ class TLClassifier(object):
         # Setting Parameters
         IMG_SAVE_FLAG = False #TEST SET - SAVE IMAGE
         DETECTION_SCORE = 0.3
-        LIMIT_BOX_SIZE = 20 # 10-> 20 So Far Red Signal Found in simulator
+        LIMIT_BOX_SIZE = 40 # 20-> 40 So Far Red Signal Found in simulator
         LIMIT_BOX_RATIO = 1.6
 
         with self.detection_graph.as_default():

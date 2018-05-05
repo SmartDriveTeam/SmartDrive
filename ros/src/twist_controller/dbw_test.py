@@ -40,7 +40,7 @@ class DBWTestNode(object):
         self.throttle_data = []
         self.brake_data = []
 
-        self.dbw_enabled = False
+        self.dbw_enabled = True
 
         base_path = os.path.dirname(os.path.abspath(__file__))
         self.steerfile = os.path.join(base_path, 'steers.csv')
