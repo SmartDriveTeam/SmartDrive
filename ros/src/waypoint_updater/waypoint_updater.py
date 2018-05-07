@@ -34,7 +34,7 @@ TO_METER_PER_SEC = 0.44704 # 1 mile/hour = 0.44704 meter/sec
 TARGET_VEL_MPH = 20
 TARGET_VEL = TARGET_VEL_MPH * TO_METER_PER_SEC
 
-MIN_TRAFFIC_LIGHT_DIST = 5  # min distance from traffic light when seeing red light  
+MIN_TRAFFIC_LIGHT_DIST = 10  # min distance from traffic light when seeing red light  
 MAX_TRAFFIC_LIGHT_DIST = 40
 
 class WaypointUpdater(object):
