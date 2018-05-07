@@ -50,6 +50,7 @@ pip install -r requirements.txt
 3. Make and run styx
 ```bash
 cd ros
+chmod +x -R src/
 catkin_make
 source devel/setup.sh
 roslaunch launch/styx.launch
