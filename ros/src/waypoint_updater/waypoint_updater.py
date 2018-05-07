@@ -26,18 +26,16 @@ as well as to verify your TL classifier.
 TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
-LOOKAHEAD_WPS = 200 # Number of waypoints we will publish. You can change this number
+LOOKAHEAD_WPS = 100 # Number of waypoints we will publish. You can change this number
 RED_LIGHT_LOOKAHEAD_WPS = 5
 
-LOGWARN_MODE = True ## Show logwarn if True is set
+LOGWARN_MODE = False ## Show logwarn if True is set
 TO_METER_PER_SEC = 0.44704 # 1 mile/hour = 0.44704 meter/sec
-TARGET_VEL_MPH = 10
+TARGET_VEL_MPH = 20
 TARGET_VEL = TARGET_VEL_MPH * TO_METER_PER_SEC
 
-MAX_DECEL_MPH = 3
-MAX_DECEL = MAX_DECEL_MPH * TO_METER_PER_SEC
-
-MIN_TRAFFIC_LIGHT_DIST = 3  # min distance from traffic light when seeing red light  
+MIN_TRAFFIC_LIGHT_DIST = 5  # min distance from traffic light when seeing red light  
+MAX_TRAFFIC_LIGHT_DIST = 40
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -134,7 +132,7 @@ class WaypointUpdater(object):
         lane.header = self.base_waypoints.header
         lane.waypoints = self.base_waypoints.waypoints[closest_idx:closest_idx + LOOKAHEAD_WPS]
         for i in range(len(lane.waypoints)-1):
-	    self.set_waypoint_velocity(lane.waypoints, i, TARGET_VEL_MPH)
+	    self.set_waypoint_velocity(lane.waypoints, i, TARGET_VEL)
         self.final_waypoints_pub.publish(lane)
 
     def publish_red_light_waypoints(self, closest_idx, red_light_waypoint_idx): ##
@@ -148,7 +146,7 @@ class WaypointUpdater(object):
         #rospy.logwarn("%s, %s, %s", closest_idx, red_light_waypoint_idx, d)
         
         for idx in range(len_tl_wps):
-            if (d > 10 and d < 40): # change speed within 10~40 mile before red light
+            if (d > MIN_TRAFFIC_LIGHT_DIST and d < MAX_TRAFFIC_LIGHT_DIST): # change speed within 10~40 mile before red light
                 if self.current_vel < 1 : # Too slow, keep constant low speed approaching red light
                     v = 1
                 else:  # Too fast, slow down gradually
