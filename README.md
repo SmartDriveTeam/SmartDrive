@@ -39,7 +39,7 @@
 
 ![alt text][image2]
 
-The whole systems can be divided into perception, planning, control system and car/Ssmulater. Besides modules provided by Udacity, we implemented waypoint updater, traffic light detection and DBW node as indicated in the above image.
+The whole systems can be divided into perception, planning, control system and car/simulater. Besides modules provided by Udacity, we implemented waypoint updater, traffic light detection and DBW node as indicated in the above image.
 
 ### Waypoint Updater
 It sets a series of look-ahead waypoints starting from current vehicle position for drive-by-wire module to follow. This module generates different waypoints based on traffic light detection results (green, yellow or red light). 
