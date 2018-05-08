@@ -76,7 +76,7 @@ class WaypointUpdater(object):
         self.update_waypoints()
 
     def update_waypoints(self): ##
-        rate = rospy.Rate(50)	# decrease Rate() from 50 to 10 Hz for slow VM & Host interaction
+        rate = rospy.Rate(10)	# decrease Rate() from 50 to 10 Hz for slow VM & Host interaction
         while not rospy.is_shutdown():
             if self.pose and self.twist and self.base_waypoints:
                 self.closest_waypoint_idx = self.get_closest_waypoint_idx()
