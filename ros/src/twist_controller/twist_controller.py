@@ -19,8 +19,8 @@ class Controller(object):
         mx = 0.2 # Maxmium throttle value
         self.throttle_controller = PID(kp, ki, kd, mn, mx)
 
-        tau = 12.0 # 1/(2pi*tau) = cutoff frequency
-        ts = 1 # Sample time
+        tau = 0.5 # 1/(2pi*tau) = cutoff frequency
+        ts = .02 # Sample time
         self.vel_lpf = LowPassFilter(tau, ts)   # filter out high frequency noisy velocity data
 
         self.vehicle_mass = vehicle_mass
