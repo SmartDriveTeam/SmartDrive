@@ -27,7 +27,7 @@ TODO (for Yousuf and Aaron): Stopline location for each traffic light.
 '''
 
 LOOKAHEAD_WPS = 100 # Number of waypoints we will publish. You can change this number
-RED_LIGHT_LOOKAHEAD_WPS = 5
+RED_LIGHT_LOOKAHEAD_WPS = 30
 
 LOGWARN_MODE = False ## Show logwarn if True is set
 TO_METER_PER_SEC = 0.44704 # 1 mile/hour = 0.44704 meter/sec
@@ -76,7 +76,7 @@ class WaypointUpdater(object):
         self.update_waypoints()
 
     def update_waypoints(self): ##
-        rate = rospy.Rate(50)	# decrease Rate() from 50 to 10 Hz for slow VM & Host interaction
+        rate = rospy.Rate(10)	# decrease Rate() from 50 to 10 Hz for slow VM & Host interaction
         while not rospy.is_shutdown():
             if self.pose and self.twist and self.base_waypoints:
                 self.closest_waypoint_idx = self.get_closest_waypoint_idx()
