@@ -61,7 +61,7 @@ class Controller(object):
         
         accel = max(min(vel_error, self.accel_limit), self.decel_limit)        
 
-        if linear_vel == 0. and current_vel < 0.1:
+        if linear_vel == 0. and current_vel < 0.4:
             throttle = 0
             brake = 400 # N*m - to hold the car in place if we are stopped at a light. Acceleration ~ 1m/s^2
 

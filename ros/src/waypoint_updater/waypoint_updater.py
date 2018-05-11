@@ -34,8 +34,8 @@ TO_METER_PER_SEC = 0.44704 # 1 mile/hour = 0.44704 meter/sec
 TARGET_VEL_MPH = 20
 TARGET_VEL = TARGET_VEL_MPH * TO_METER_PER_SEC
 
-MIN_TRAFFIC_LIGHT_DIST = 10  # min distance from traffic light when seeing red light  
-MAX_TRAFFIC_LIGHT_DIST = 40
+MIN_TRAFFIC_LIGHT_DIST = 15  # min distance from traffic light when seeing red light  
+MAX_TRAFFIC_LIGHT_DIST = 50
 
 class WaypointUpdater(object):
     def __init__(self):
@@ -148,7 +148,7 @@ class WaypointUpdater(object):
         for idx in range(len_tl_wps):
             if (d > MIN_TRAFFIC_LIGHT_DIST and d < MAX_TRAFFIC_LIGHT_DIST): # change speed within 10~40 mile before red light
                 if self.current_vel < 1 : # Too slow, keep constant low speed approaching red light
-                    v = 1
+                    v = 0.9
                 else:  # Too fast, slow down gradually
                     v = self.current_vel * (1 - float(idx)/(len_wps-1))
             else:  
